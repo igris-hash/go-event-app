@@ -2,13 +2,14 @@ package main
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/igris-hash/go-event-app/db"
 	"github.com/igris-hash/go-event-app/models"
 )
 
 func main() {
+	db.InitDB()
 	server := gin.Default()
 	server.GET("/events", getEvents)
 	server.POST("/events", createEvent)
@@ -16,7 +17,12 @@ func main() {
 }
 
 func getEvents(context *gin.Context) {
-	context.JSON(http.StatusOK, gin.H{"message": "Hello world"})
+	events, err := models.GetEvents()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not fetch events. Try again later."})
+		return
+	}
+	context.JSON(http.StatusOK, events)
 }
 
 func createEvent(context *gin.Context) {
@@ -27,8 +33,12 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data"})
 		return
 	}
-	request.ID = int(time.Millisecond)
+	request.ID = 3382393
 	request.UserID = 1
-	request.Save()
+	err = request.Save()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "Could not create event. Try again later."})
+		return
+	}
 	context.JSON(http.StatusCreated, gin.H{"message": "Event created", "event": request})
 }
