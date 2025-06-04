@@ -12,7 +12,7 @@ type Event struct {
 	Description string    `binding:"required"`
 	Location    string    `binding:"required"`
 	DateTime    time.Time `binding:"required"`
-	UserID      int
+	UserID      int64
 }
 
 var eventsBox = []Event{}
@@ -100,5 +100,40 @@ func (e *Event) Delete() error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(e.ID)
+	return err
+}
+
+func (e *Event) RegisterNewEvent(userId int64) error {
+	query := `
+	INSERT INTO registrations(event_id, user_id) VALUES (?, ?)
+	`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	result, err := stmt.Exec(e.ID, userId)
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
+	e.ID = id
+	return err
+}
+
+func (e Event) CancelRegistration(userId int64) error {
+	query := `
+	DELETE FROM registrations
+	WHERE event_id = ? AND user_id = ?
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(e.ID, userId)
 	return err
 }
