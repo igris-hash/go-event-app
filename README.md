@@ -20,7 +20,7 @@ A RESTful API for managing events and user registrations, built with Go, Gin, an
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/go-event-app.git
+git clone https://github.com/gojo-op/go-event-app.git
 cd go-event-app
 ```
 
