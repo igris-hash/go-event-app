@@ -1,0 +1,10 @@
+[
+  {
+    "type": "sqlite",
+    "path": "d:\\BML_Go_Projects\\go-event-app\\db\\events.db"
+  },
+  {
+    "type": "sqlite",
+    "path": "d:\\BML_Go_Projects\\go-event-app\\events.db"
+  }
+]
